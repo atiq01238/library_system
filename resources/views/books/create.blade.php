@@ -46,6 +46,13 @@
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
                 <div class="mb-3">
+                    <label for=" authorName" class="form-label"> Author Name</label>
+                    <input type="text" class="form-control" id="authorName" name="author_name" placeholder="Enter author name">
+                </div>
+                @error('book_author')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+                <div class="mb-3">
                     <label for="category" class="form-label">Book Category</label>
 
                         <select id="category" name="category_id" class="form-select">
@@ -67,6 +74,14 @@
                     <textarea class="form-control" id="bookDescription" name="description" rows="4" placeholder="Enter book description"></textarea>
                 </div>
                 @error('description')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+                <div class="mb-3">
+                    <label for="bookPdf" class="form-label">Book PDF</label>
+                    <input type="file" class="form-control" id="bookPdf" name="book_pdf" accept=".pdf">
+                </div>
+
+                @error('book_pdf')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
 

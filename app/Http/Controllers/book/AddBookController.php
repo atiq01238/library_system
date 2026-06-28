@@ -15,8 +15,11 @@ class AddBookController extends Controller
    $request->validate([
         'book_image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         'book_name' => 'required|string|max:255',
+        'author_name' => 'required|string|max:255',
         'category_id' => 'required|exists:book_categories,id',
         'description' => 'required|string',
+        'book_pdf' => 'required|mimes:pdf|max:10240',
+
     ]);
     // dd($request->all());
     if (!$request->hasFile('book_image')) {
@@ -26,12 +29,21 @@ class AddBookController extends Controller
     $imageName = time() . '.' . $request->book_image->extension();
     $request->book_image->move(public_path('uploads/books'), $imageName);
 
+    $pdfName = null;
+
+    if ($request->hasFile('book_pdf')) {
+        $pdfName = time().'_'.$request->book_pdf->getClientOriginalName();
+        $request->book_pdf->move(public_path('uploads/pdfs'), $pdfName);
+    }
 
     Book::create([
         'book_image' => $imageName,
         'book_name' => $request->book_name,
+        'author_name' => $request->author_name,
         'category_id' => $request->category_id,
         'description' => $request->description,
+        'book_pdf' => $pdfName,
+
     ]);
 
     return back()->with('success', 'Book added successfully');
@@ -40,8 +52,8 @@ class AddBookController extends Controller
 
     public function index()
     {
-        $books = Book::all();
-        return view('/welcome', compact('books'));
+        $books = Book::latest()->take(5)->get();
+        return view('user-layout.master', compact('books'));
     }
 
     public function show($id)
@@ -78,6 +90,7 @@ class AddBookController extends Controller
         $request->validate([
             'book_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'book_name' => 'required|string|max:255',
+            'author_name' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
 
@@ -111,5 +124,12 @@ class AddBookController extends Controller
         $categories = BookCategory::orderBy('category_name', 'asc')->get();
 
         return view('books.create', compact('categories'));
+    }
+    public function search(Request $request)
+    {
+        $books = Book::where('book_name', 'LIKE', '%' . $request->search . '%')
+                    ->get();
+
+        return view('books.search-result', compact('books'));
     }
 }

@@ -23,13 +23,13 @@ Route::post('/logout', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/', function () {
-        return view('welcome');
+        return view('user-layout.master');
     });
     
     Route::get('/book', function () {
     return view('books.index');
     });
-    Route::get('/', [AddBookController::class,'index'])->name('welcome');
+    Route::get('/', [AddBookController::class,'index'])->name('user-layout.master');
     Route::get('/book/{id}', [AddBookController::class, 'show'])->name('books.show');
     Route::get('/all-books', [AddBookController::class, 'index'])
         ->name('books.index');
@@ -39,6 +39,9 @@ Route::middleware(['auth'])->group(function () {
 
 });
 Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('admin', function () {
+        return view('welcome');
+    });
     Route::put('/users/{id}/role', [RegisterController::class, 'updateRole'])
         ->name('users.role.update');
 
@@ -60,9 +63,9 @@ Route::middleware(['auth','role:admin,member'])->group(function () {
     return view('book_category.create');
     });
     Route::post('/add-book-category', [BookCategoryController::class,'store'])->name('add-book-category');
-   
     Route::get('/add-book', [AddBookController::class,'create']);
-
     Route::get('/book-categories', [BookCategoryController::class, 'allCategories'])
     ->name('book_categories.index');
+    Route::get('/search-books', [AddBookController::class, 'search'])
+    ->name('books.search');
 });

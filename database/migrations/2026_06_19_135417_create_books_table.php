@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('book_image');
             $table->string('book_name');
+            $table->string('author_name');
               $table->foreignId('category_id')
             ->constrained('book_categories')
             ->cascadeOnDelete();
             $table->text('description');
+            $table->string('book_pdf')->nullable();
             $table->timestamps();
         });
     }
