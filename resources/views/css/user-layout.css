@@ -1,0 +1,530 @@
+<style>
+    .banner-image {
+        width: 100%;
+        height: auto;
+        max-height: 500px;
+        object-fit: contain;
+    }
+
+    .product-img {
+        width: 50%;
+        height: auto;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .product-item {
+        height: 100%;
+    }
+
+    .product-item h3 {
+        font-size: 18px;
+        height: 50px;
+        overflow: hidden;
+    }
+
+    .product-style {
+        width: 100%;
+        height: 380px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f7f7f7;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+
+    .book-cover {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .product-style {
+        position: relative;
+    }
+
+    .add-to-cart {
+        position: absolute;
+        left: 50%;
+        bottom: 15px;
+        transform: translateX(-50%);
+        width: 80%;
+        text-align: center;
+    }
+
+    .product-item {
+        height: 100%;
+    }
+
+    figcaption {
+        min-height: 130px;
+    }
+
+    figcaption h3 {
+        font-size: 18px;
+        height: 48px;
+        overflow: hidden;
+    }
+
+    figcaption p {
+        height: 45px;
+        overflow: hidden;
+    }
+
+    .product-style {
+        width: 100%;
+        height: 350px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f8f8f8;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .book-cover {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    /* the sidebar of view all books */
+
+    /* ===== Overlay ===== */
+    .books-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 15, 15, 0.55);
+        backdrop-filter: blur(1px); /* lighter, cheaper to paint */
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s;
+        z-index: 1040;
+        pointer-events: none;
+    }
+
+    .books-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+
+    }
+
+    /* ===== Sidebar Panel ===== */
+    .books-sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 420px;
+        max-width: 92vw;
+        height: 100%;
+        background: #fff;
+        box-shadow: -10px 0 40px rgba(0, 0, 0, 0.18);
+        z-index: 1050;
+        transform: translateX(100%);
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); /* was 0.8s */
+        display: flex;
+        flex-direction: column;
+        font-family: inherit;
+        will-change: transform;
+
+    }
+
+    .books-sidebar.active {
+        transform: translateX(0);
+    }
+
+    /* ===== Header ===== */
+    .books-sidebar-header {
+        padding: 28px 28px 22px;
+        background: #0f0f0f;
+        color: #fff;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .books-sidebar-header .sidebar-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 4px;
+        letter-spacing: 0.3px;
+    }
+
+    .books-sidebar-header .sidebar-subtitle {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.55);
+        margin: 0 0 18px;
+    }
+
+    .close-sidebar-btn {
+        position: absolute;
+        top: 22px;
+        right: 24px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        font-size: 20px;
+        line-height: 1;
+        cursor: pointer;
+        transition: 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close-sidebar-btn:hover {
+        background: rgba(255, 255, 255, 0.18);
+        transform: rotate(90deg);
+    }
+
+    /* ===== Search ===== */
+    .search-wrap {
+        position: relative;
+        margin-bottom: 18px;
+    }
+
+    .search-wrap::before {
+        content: "🔍";
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+        opacity: 0.6;
+    }
+
+    .search-wrap input {
+        width: 100%;
+        padding: 12px 16px 12px 38px;
+        border-radius: 30px;
+        border: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+        transition: 0.25s;
+    }
+
+    .search-wrap input::placeholder {
+        color: rgba(255, 255, 255, 0.45);
+    }
+
+    .search-wrap input:focus {
+        background: rgba(255, 255, 255, 0.16);
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+    }
+
+    /* ===== Tabs (segmented control style) ===== */
+    .tab-switch {
+        display: flex;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 30px;
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .sidebar-tab-btn {
+        flex: 1;
+        padding: 9px 12px;
+        border: none;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.6);
+        border-radius: 24px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        transition: 0.3s ease;
+    }
+
+    .sidebar-tab-btn.active {
+        background: #fff;
+        color: #0f0f0f;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .sidebar-tab-btn:not(.active):hover {
+    color: #fff;
+    }
+
+    /* ===== Body ===== */
+    .books-sidebar-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px 24px 24px;
+    }
+
+    .books-sidebar-body::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .books-sidebar-body::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
+
+    .sidebar-tab-content { display: none; }
+    .sidebar-tab-content.active {
+        display: block;
+        animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ===== Book Item ===== */
+    .sidebar-book-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 10px;
+        border-radius: 10px;
+        transition: background 0.25s;
+        cursor: pointer;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+    .sidebar-book-item:hover {
+        background: #f8f8f8;
+    }
+
+    .sidebar-book-item img {
+        width: 48px;
+        height: 64px;
+        object-fit: cover;
+        border-radius: 6px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        flex-shrink: 0;
+    }
+
+    .sidebar-book-info h4 {
+        margin: 0 0 4px;
+        font-size: 14.5px;
+        font-weight: 600;
+        color: #1a1a1a;
+        line-height: 1.3;
+    }
+
+    .sidebar-book-info span {
+        font-size: 12px;
+        color: #999;
+    }
+
+    /* ===== Category Item ===== */
+    .sidebar-category-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 14px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+        background: #f8f8f8;
+        transition: 0.25s;
+        cursor: pointer;
+    }
+
+    .sidebar-category-item:hover {
+        background: #efefef;
+        transform: translateX(-4px);
+    }
+
+    .sidebar-category-item h4 {
+        margin: 0;
+        font-size: 14.5px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .sidebar-category-item::after {
+        content: "→";
+        color: #999;
+        font-size: 14px;
+    }
+
+    /* ===== Empty state ===== */
+    .sidebar-empty {
+        text-align: center;
+        padding: 40px 10px;
+        color: #999;
+        font-size: 14px;
+    }
+/* show book detail    */
+/* ===== Overlay (no blur = no lag) ===== */
+/* ===== Overlay ===== */
+.book-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 20, 20, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease;
+    z-index: 1060;
+}
+.book-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ===== Modal Container ===== */
+.book-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.97);
+    width: 780px;
+    max-width: 92vw;
+    max-height: 88vh;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+    z-index: 1070;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+}
+.book-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.book-modal-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid #eee;
+    background: #fff;
+    color: #333;
+    font-size: 19px;
+    cursor: pointer;
+    z-index: 5;
+    transition: background 0.2s, transform 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.book-modal-close:hover {
+    background: #f5f5f5;
+    border-color: #ddd;
+    transform: rotate(90deg);
+}
+
+/* ===== Left: Image panel ===== */
+.book-modal-img {
+    flex: 0 0 260px;
+    background: linear-gradient(180deg, #f9f9f9, #f1f1f1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 28px;
+}
+.book-modal-img img {
+    width: 100%;
+    max-height: 340px;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+}
+
+/* ===== Right: Info panel ===== */
+.book-modal-info {
+    flex: 1;
+    padding: 44px 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.modal-eyebrow {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #b08d57; /* swap to your accent/brand color */
+    margin-bottom: 10px;
+}
+
+.book-modal-info h2 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 800;
+    color: #161616;
+    line-height: 1.3;
+}
+
+.modal-author {
+    font-size: 14px;
+    color: #8a8a8a;
+    margin-bottom: 22px;
+    display: block;
+}
+.modal-author::before {
+    content: "by ";
+    color: #b8b8b8;
+}
+
+.modal-description {
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 28px;
+    flex: 1;
+}
+
+.book-modal-actions {
+    display: flex;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+.book-modal-actions .btn {
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 24px;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.book-modal-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 650px) {
+    .book-modal {
+        flex-direction: column;
+        max-height: 90vh;
+    }
+    .book-modal-img {
+        flex: none;
+        padding: 30px;
+    }
+    .book-modal-img img {
+        max-height: 220px;
+    }
+    .book-modal-info {
+        padding: 30px 28px;
+    }
+}
+</style>

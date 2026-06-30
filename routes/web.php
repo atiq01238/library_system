@@ -20,28 +20,30 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect('/auth/login');
 })->name('logout');
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/', function () {
+Route::get('/', function () {
         return view('user-layout.master');
     });
+Route::get('/', [AddBookController::class,'index'])->name('user-layout.master');
+
+Route::middleware(['auth'])->group(function () {
     
     Route::get('/book', function () {
     return view('books.index');
     });
-    Route::get('/', [AddBookController::class,'index'])->name('user-layout.master');
     Route::get('/book/{id}', [AddBookController::class, 'show'])->name('books.show');
     Route::get('/all-books', [AddBookController::class, 'index'])
         ->name('books.index');
     Route::get('/all-books', [AddBookController::class,'allBooks'])->name('/books.index');
-
+    Route::get('/profile', function(){
+        return view('user-profile.index');
+    });
    
 
 });
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('admin', function () {
-        return view('welcome');
-    });
+    // Route::get('admin', function () {
+    //     return view('welcome');
+    // });
     Route::put('/users/{id}/role', [RegisterController::class, 'updateRole'])
         ->name('users.role.update');
 
@@ -56,6 +58,8 @@ Route::middleware(['auth','role:admin,member'])->group(function () {
    Route::get('/add-book', function () {
     return view('books.create');
     });
+        Route::get('admin', [AddBookController::class,'adminHome'])->name('welcome');
+
     Route::post('/add-book', [AddBookController::class,'addBook'])->name('/add-book');
     Route::get('/books/{id}/edit', [AddBookController::class, 'edit'])->name('books.edit');
     Route::put('/books/{id}', [AddBookController::class, 'update'])->name('books.update');
@@ -68,4 +72,6 @@ Route::middleware(['auth','role:admin,member'])->group(function () {
     ->name('book_categories.index');
     Route::get('/search-books', [AddBookController::class, 'search'])
     ->name('books.search');
+    Route::get('/books/search-suggestions', [AddBookController::class, 'searchSuggestions'])->name('books.search.suggestions');
+
 });

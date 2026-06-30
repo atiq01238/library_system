@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BookCategory;
 use Illuminate\Http\Request;
 use App\Models\Book;
+use App\Models\User;
 class AddBookController extends Controller
 {
     //
@@ -52,8 +53,11 @@ class AddBookController extends Controller
 
     public function index()
     {
-        $books = Book::latest()->take(5)->get();
-        return view('user-layout.master', compact('books'));
+        $books = Book::latest()->take(4)->get();
+        $latestBooks = Book::latest()->take(8)->get();
+        $allBooks    = Book::latest()->get();             // full list for sidebar
+        $categories = BookCategory::latest()->take(7)->get();
+        return view('user-layout.master', compact('books','categories','latestBooks','allBooks'));
     }
 
     public function show($id)
@@ -83,7 +87,8 @@ class AddBookController extends Controller
     public function edit($id)
     {
         $book = Book::findOrFail($id);
-        return view('books.edit', compact('book'));
+        $categories = BookCategory::orderBy('category_name', 'asc')->get();
+        return view('books.edit', compact('book','categories'));
     }
     public function update(Request $request, $id)
     {
@@ -91,29 +96,28 @@ class AddBookController extends Controller
             'book_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'book_name' => 'required|string|max:255',
             'author_name' => 'required|string|max:255',
+            'category_id' => 'required|exists:book_categories,id',
             'description' => 'required|string',
         ]);
-
+        // dd($request->all());
         $book = Book::findOrFail($id);
 
-        // if new image uploaded
         if ($request->hasFile('book_image')) {
 
-            // delete old image
             $oldImage = public_path('uploads/books/' . $book->book_image);
             if (file_exists($oldImage)) {
                 unlink($oldImage);
             }
 
-            // upload new image
             $imageName = time() . '.' . $request->book_image->extension();
             $request->book_image->move(public_path('uploads/books'), $imageName);
 
             $book->book_image = $imageName;
         }
 
-        // update other fields
         $book->book_name = $request->book_name;
+        $book->author_name = $request->author_name; 
+        $book->category_id = $request->category_id;
         $book->description = $request->description;
         $book->save();
 
@@ -131,5 +135,41 @@ class AddBookController extends Controller
                     ->get();
 
         return view('books.search-result', compact('books'));
+    }
+    public function adminHome()
+    {
+        $totalBooks = Book::count();
+        $totalCategories = BookCategory::count();
+        $totalUsers = User::count();
+        $overdueBooks = Book::where('due_date', '<', now())
+                            ->where('status', 'borrowed');
+
+        $recentBooks = Book::with('category')
+                            ->latest()
+                            ->take(5)
+                            ->get();
+
+        return view('welcome', compact(
+            'totalBooks',
+            'totalCategories',
+            'totalUsers',
+            'overdueBooks',
+            'recentBooks'
+        ));
+    }
+    public function searchSuggestions(Request $request)
+    {
+        $query = $request->input('query');
+
+        if (!$query) {
+            return response()->json([]);
+        }
+
+        $books = Book::where('book_name', 'like', "%{$query}%")
+                    ->orWhere('arthur_name', 'like', "%{$query}%")
+                    ->take(8)
+                    ->get(['id', 'book_name', 'arthur_name', 'book_image']);
+
+        return response()->json($books);
     }
 }

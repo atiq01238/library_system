@@ -17,7 +17,7 @@ class BookCategoryController extends Controller
     public function store(Request $request)
     {
     $request->validate([
-        'category_name'=>['required','string'],
+        'category_name' => ['required', 'string', 'unique:book_categories,category_name'],
     ]);
     // dd($request->all());
     BookCategory::create([
