@@ -131,10 +131,8 @@
         document.body.style.overflow = '';
     }
 
-    // expose so other scripts (sidebar) can trigger it
     window.openBookModal = openModal;
 
-    // book-card grid
     document.querySelectorAll('.book-card').forEach(card => {
         card.addEventListener('click', function () {
             openModal({
@@ -150,7 +148,6 @@
     document.querySelectorAll('.add-to-cart').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
-            // your add-to-cart logic here
         });
     });
 
@@ -162,44 +159,70 @@
     });
 });
 //  this is the view card user profile in top header
-document.addEventListener('DOMContentLoaded', function () {
-        const toggle = document.getElementById('userAccountToggle');
-        const overlay = document.getElementById('profileModalOverlay');
-        const closeBtn = document.getElementById('profileModalClose');
+document.addEventListener("DOMContentLoaded", function () {
 
-        function openModal() {
-            overlay.classList.add('show');
-            document.body.classList.add('modal-open');
-            document.body.style.overflow = 'hidden'; // stop scrolling behind modal
-        }
+    const toggle = document.getElementById("userAccountToggle");
+    const overlay = document.getElementById("profileModalOverlay");
+    const closeBtn = document.getElementById("profileModalClose");
 
-        function closeModal() {
-            overlay.classList.remove('show');
-            document.body.classList.remove('modal-open');
-            document.body.style.overflow = '';
-        }
+    if (!toggle || !overlay || !closeBtn) {
+        console.log("Modal elements not found.");
+        return;
+    }
 
-        if (toggle) {
-            toggle.addEventListener('click', function (e) {
-                e.preventDefault();
-                openModal();
-            });
-        }
+    function openModal() {
+        overlay.classList.add("show");
+        document.body.style.overflow = "hidden";
+    }
 
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeModal);
-        }
+    function closeModal() {
+        overlay.classList.remove("show");
+        document.body.style.overflow = "";
+    }
 
-        // close when clicking outside the modal box
-        overlay.addEventListener('click', function (e) {
-            if (e.target === overlay) {
-                closeModal();
-            }
-        });
-
-        // close on Escape key
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeModal();
-        });
+    toggle.addEventListener("click", function(e){
+        e.preventDefault();
+        openModal();
     });
-    
+
+    closeBtn.addEventListener("click", closeModal);
+
+    overlay.addEventListener("click", function(e){
+        if(e.target === overlay){
+            closeModal();
+        }
+    });
+
+});
+// this is for favrioute books js
+function recordBookView(bookId) {
+    if (!bookId) return;
+
+    fetch(`/books/${bookId}/view`, {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+            "Accept": "application/json"
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const stat = document.getElementById("viewedCountStat");
+        if (stat) stat.textContent = data.count;
+    })
+    .catch(err => console.log(err));
+}
+document.querySelectorAll(".book-card").forEach(card => {
+    card.addEventListener("click", function () {
+        const bookId = this.dataset.id;
+        // ...existing code that populates modalBookName, modalBookImage, etc.
+        recordBookView(bookId);
+    });
+});
+document.querySelectorAll(".sidebar-book-item").forEach(item => {
+    item.addEventListener("click", function () {
+        const bookId = this.dataset.id;
+        // ...existing code that populates the modal
+        recordBookView(bookId);
+    });
+});

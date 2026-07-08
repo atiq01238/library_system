@@ -55,9 +55,28 @@ class AddBookController extends Controller
     {
         $books = Book::latest()->take(4)->get();
         $latestBooks = Book::latest()->take(8)->get();
-        $allBooks    = Book::latest()->get();             // full list for sidebar
+        $allBooks = Book::latest()->get();
         $categories = BookCategory::latest()->take(7)->get();
-        return view('user-layout.master', compact('books','categories','latestBooks','allBooks'));
+
+        if (auth()->check()) {
+            $userFavoriteIds = auth()->user()->favoriteBooks()->pluck('books.id')->toArray();
+            $favoriteBooks = auth()->user()->favoriteBooks()->latest()->get();
+            $readBooksCount = auth()->check() ? auth()->user()->readBooks()->count() : 0;
+        } else {
+            $userFavoriteIds = [];
+            $favoriteBooks = collect();
+            $readBooksCount = 0; 
+        }
+
+        return view('user-layout.master', compact(
+            'books',
+            'categories',
+            'latestBooks',
+            'allBooks',
+            'userFavoriteIds',
+            'favoriteBooks',
+            'readBooksCount' 
+        ));
     }
 
     public function show($id)
@@ -171,5 +190,47 @@ class AddBookController extends Controller
                     ->get(['id', 'book_name', 'arthur_name', 'book_image']);
 
         return response()->json($books);
+    }
+  public function logRead($id)
+    {
+        $book = Book::findOrFail($id);
+
+        auth()->user()->readBooks()->syncWithoutDetaching([
+            $book->id => ['read_at' => now()]
+        ]);
+
+        return response()->json([
+            'readCount' => auth()->user()->readBooks()->count()
+        ]);
+    }
+    public function readBook($id)
+    {
+        $book = Book::findOrFail($id);
+
+        auth()->user()->readBooks()->syncWithoutDetaching([
+            $book->id => ['read_at' => now()]
+        ]);
+
+        $pdfPath = public_path('uploads/pdfs/' . $book->book_pdf);
+
+        if (!file_exists($pdfPath)) {
+            abort(404, 'PDF not found');
+        }
+
+        return response()->file($pdfPath);
+    }
+    public function searchBar(Request $request)
+    {
+        $search = $request->search;
+
+        $books = Book::with('category')
+            ->where('book_name', 'like', "%{$search}%")
+            ->orWhere('author_name', 'like', "%{$search}%")
+            ->orWhereHas('category', function ($query) use ($search) {
+                $query->where('category_name', 'like', "%{$search}%");
+            })
+            ->get();
+
+        return view('user.search', compact('books', 'search'));
     }
 }

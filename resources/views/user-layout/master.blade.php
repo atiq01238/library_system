@@ -11,122 +11,21 @@
 	<meta name="author" content="">
 	<meta name="keywords" content="">
 	<meta name="description" content="">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
+
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 	<link rel="stylesheet" type="text/css" href="{{ asset('css/normalize.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('icomoon/icomoon.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('css/vendor.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ asset('style.css') }}">
 </head>
-	<style>
-		.profile-modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 9998;
-    justify-content: center;
-    align-items: center;
-}
 
-.profile-modal-overlay.show {
-    display: flex;
-}
 
-/* Blur everything behind the modal */
-body.modal-open > *:not(.profile-modal-overlay) {
-    filter: blur(4px);
-    pointer-events: none;
-    user-select: none;
-}
-
-.profile-modal {
-    background: #fff;
-    border-radius: 12px;
-    padding: 30px;
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    animation: modalFadeIn 0.25s ease;
-}
-
-@keyframes modalFadeIn {
-    from { opacity: 0; transform: translateY(-15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.profile-modal-close {
-    position: absolute;
-    top: 12px;
-    right: 16px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #888;
-}
-
-.profile-modal-content {
-    text-align: center;
-}
-
-.profile-avatar img,
-.avatar-placeholder {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin: 0 auto 15px;
-}
-
-.avatar-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #5b6df9;
-    color: #fff;
-    font-size: 32px;
-    font-weight: 600;
-}
-
-.profile-email, .profile-phone, .profile-address {
-    color: #777;
-    font-size: 14px;
-    margin: 4px 0;
-}
-
-.profile-actions {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.btn-profile {
-    display: block;
-    padding: 10px;
-    border-radius: 6px;
-    background: #f2f2f2;
-    color: #333;
-    text-decoration: none;
-    border: none;
-    font-size: 14px;
-    cursor: pointer;
-    width: 100%;
-}
-
-.btn-logout {
-    background: #ffe5e5;
-    color: #d33;
-}
-	</style>
-<body data-bs-spy="scroll" data-bs-target="#header" tabindex="0"  data-logged-in="{{ auth()->check() ? 'true' : 'false' }}">
+<body data-bs-spy="scroll" data-bs-target="#header" tabindex="0"
+	data-logged-in="{{ auth()->check() ? 'true' : 'false' }}">
 
 	<div id="header-wrap">
 
@@ -194,28 +93,96 @@ body.modal-open > *:not(.profile-modal-overlay) {
 
 	@auth
 		<div class="profile-modal-overlay" id="profileModalOverlay">
-			<div class="profile-modal">
+			<div class="profile-modal profile-dashboard">
+
 				<button class="profile-modal-close" id="profileModalClose">&times;</button>
+
 				<div class="profile-modal-content">
-					<div class="profile-avatar">
+
+					{{-- Avatar --}}
+					{{-- <div class="profile-avatar">
 						@if(auth()->user()->avatar)
-							<img src="{{ asset('uploads/avatars/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}">
+						<img src="{{ asset('uploads/avatars/' . auth()->user()->avatar) }}">
 						@else
-							<div class="avatar-placeholder">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+						<div class="avatar-placeholder">
+							{{ strtoupper(substr(auth()->user()->name,0,1)) }}
+						</div>
 						@endif
-					</div>
+					</div> --}}
+
 					<h3>{{ auth()->user()->name }}</h3>
 					<p class="profile-email">{{ auth()->user()->email }}</p>
-					
+
 					<hr>
-					<div class="profile-actions">
-						{{-- <a href="" class="btn-profile">Edit Profile</a> --}}
-						<form method="POST" action="{{ route('logout') }}">
-							@csrf
-							<button type="submit" class="btn-profile btn-logout">Logout</button>
-						</form>
+
+					{{-- Statistics --}}
+					<div class="profile-stats">
+
+						<div class="stat-box">
+							<i class="fas fa-heart"></i>
+							<h4>{{ count($favoriteBooks) }} </h4>
+							<span>Favorites</span>
+						</div>
+
+						<div class="stat-box">
+							<i class="fas fa-eye"></i>
+							<h4 id="viewedCountStat">{{ $viewedBooksCount ?? 0 }}</h4>
+							<span>Viewed</span>
+						</div>
+
+						<div class="stat-box">
+							<i class="fas fa-book-reader"></i>
+							<h4 id="readCountStat">{{ $readBooksCount ?? 0 }}</h4>
+							<span>Read</span>
+						</div>
+
 					</div>
+
+					<hr>
+
+					{{-- Favorite Books --}}
+					<div class="profile-favorites">
+
+						<div class="section-title">
+							❤️ My Favorite Books
+						</div>
+
+						@forelse($favoriteBooks->take(2) as $book)
+
+							<div class="favorite-row">
+
+								<img src="{{ asset('uploads/books/' . $book->book_image) }}">
+
+								<div class="favorite-details">
+									<h5>{{ $book->book_name }}</h5>
+									<small>{{ $book->author_name }}</small>
+								</div>
+
+								<a href="{{ route('books.read', $book->id) }}" target="_blank" class="read-btn">
+									Read
+								</a>
+
+							</div>
+
+						@empty
+
+							<div class="empty-books">
+								No favorite books yet.
+							</div>
+
+						@endforelse
+
+					</div>
+
+					<form method="POST" action="{{ route('logout') }}">
+						@csrf
+						<button class="btn-profile btn-logout mt-3">
+							Logout
+						</button>
+					</form>
+
 				</div>
+
 			</div>
 		</div>
 	@endauth
@@ -226,7 +193,8 @@ body.modal-open > *:not(.profile-modal-overlay) {
 		crossorigin="anonymous"></script>
 	<script src="{{ asset('js/plugins.js') }}"></script>
 	<script src="{{ asset('js/script.js') }}"></script>
-	
+
 </body>
 @stack('scripts')
+
 </html>

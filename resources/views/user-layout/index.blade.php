@@ -14,22 +14,48 @@
                     @foreach($books as $book)
                         <div class="slider-item">
                             <div class="banner-content">
-                                <h2 class="banner-title">{{ $book->book_name }}</h2>
 
-                                <p>
-                                    {{ Str::limit($book->description, 150) }}
+                                <span class="book-category">
+                                    {{ $book->category->category_name ?? 'Library Collection' }}
+                                </span>
+
+                                <h2 class="banner-title">
+                                    {{ $book->book_name }}
+                                </h2>
+
+                                <p class="book-author">
+                                    <i class="fas fa-user-edit"></i>
+                                    {{ $book->author_name }}
                                 </p>
 
-                                <div class="btn-wrap">
-                                    <a href="#" class="btn btn-outline-accent btn-accent-arrow">
-                                        Read More
-                                        <i class="icon icon-ns-arrow-right"></i>
-                                    </a>
+                                <div class="book-rating">
+                                    ⭐⭐⭐⭐⭐
+                                    <span>(4.9)</span>
                                 </div>
+
+                                <p class="banner-description">
+                                    {{ Str::limit($book->description, 170) }}
+                                </p>
+
+                                <div class="banner-buttons">
+
+                                    @auth
+                                        <a href="{{ route('books.read', $book->id) }}" target="_blank" class="hero-read-btn"
+                                            data-book-id="{{ $book->id }}" onclick="logRead(event,this)">
+                                            📖 Read Now
+                                        </a>
+                                    @else
+                                        <a href="{{ route('login') }}" class="hero-login-btn">
+                                            🔒 Login to Read
+                                        </a>
+                                    @endauth
+
+                                </div>
+
                             </div>
 
                             <img src="{{ asset('uploads/books/' . $book->book_image) }}" alt="{{ $book->book_name }}"
-                                class="banner-image">
+                                class="banner-image hero-book-image">
                         </div>
                     @endforeach
 
@@ -84,34 +110,40 @@
                                 <div class="product-item">
 
                                     <figure class="product-style">
-                                        <img src="{{ asset('uploads/books/' . $book->book_image) }}"
-                                            alt="{{ $book->book_name }}" class="book-cover">
+
+                                        <img src="{{ asset('uploads/books/' . $book->book_image) }}" class="book-cover">
+                                        <button
+                                            class="btn-heart {{ in_array($book->id, $userFavoriteIds) ? 'active' : '' }}"
+                                            data-book-id="{{ $book->id }}">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
                                     </figure>
 
-                                    <div class="text-center mt-3">
-                                        @auth
-                                            <a href="{{ asset('uploads/pdfs/' . $book->book_pdf) }}" target="_blank"
-                                                class="btn btn-dark px-4">
-                                                📖 Read Book
-                                            </a>
-                                        @else
-                                            <a href="{{ route('login') }}" class="btn btn-dark px-4">
-                                                🔒 Login to Read
-                                            </a>
-                                        @endauth
-                                    </div>
                                     <figcaption>
 
                                         <h3>{{ $book->book_name }}</h3>
 
-                                        <span>{{ $book->arthur_name }}</span>
+                                        <span>
+                                            <i class="fas fa-user-edit me-1"></i>
+                                            {{ $book->author_name }}
+                                        </span>
 
-                                        <p class="mt-2">
-                                            {{ \Illuminate\Support\Str::limit($book->description, 60) }}
+                                        <p>
+                                            {{ \Illuminate\Support\Str::limit($book->description, 80) }}
                                         </p>
 
-                                    </figcaption>
+                                        @auth
+                                            <a href="{{ route('books.read', $book->id) }}" target="_blank" class="read-btn"
+                                                data-book-id="{{ $book->id }}" onclick="logRead(event, this)">
+                                                📖 Read Book
+                                            </a>
+                                        @else
+                                            <a href="{{ route('login') }}" class="read-btn">
+                                                🔒 Login to Read
+                                            </a>
+                                        @endauth
 
+                                    </figcaption>
                                 </div>
 
                             </div>
@@ -167,22 +199,61 @@
                     {{-- All Genre: latest books across all categories --}}
                     <div id="all-genre" data-tab-content class="active">
                         <div class="row">
-                           @forelse ($latestBooks as $book)
+                            @forelse ($latestBooks as $book)
                                 <div class="col-md-3">
-                                    <div class="product-item book-card"
-                                        data-id="{{ $book->id }}"
-                                        data-name="{{ $book->book_name }}"
-                                        data-author="{{ $book->author_name }}"
-                                        data-image="{{ asset('uploads/books/'.$book->book_image) }}"
+                                    <div class="product-item book-card" data-id="{{ $book->id }}"
+                                        data-name="{{ $book->book_name }}" data-author="{{ $book->author_name }}"
+                                        data-image="{{ asset('uploads/books/' . $book->book_image) }}"
                                         data-description="{{ $book->description }}"
-                                        data-pdf="{{ $book->book_pdf ? asset('uploads/pdfs/'.$book->book_pdf) : '' }}">
+                                        data-pdf="{{ $book->book_pdf ? asset('uploads/pdfs/' . $book->book_pdf) : '' }}">
                                         <figure class="product-style">
                                             <img src="{{ asset('uploads/books/' . $book->book_image) }}"
-                                                alt="{{ $book->book_name }}" class="product-item">
+                                                alt="{{ $book->book_name }}" class="popular-book-image">
                                         </figure>
                                         <figcaption>
-                                            <h3>{{ $book->book_name }}</h3>
-                                            <span>{{ $book->author_name }}</span>
+
+                                            <span class="popular-category">
+                                                {{ $book->category->category_name ?? 'General' }}
+                                            </span>
+
+                                            <h3 class="popular-title">
+                                                {{ $book->book_name }}
+                                            </h3>
+
+                                            <p class="popular-author">
+                                                <i class="fas fa-user-edit"></i>
+                                                {{ $book->author_name }}
+                                            </p>
+
+                                            <div class="popular-rating">
+                                                ⭐⭐⭐⭐⭐
+                                                <span>4.9</span>
+                                            </div>
+
+                                            <p class="popular-description">
+                                                {{ Str::limit($book->description, 65) }}
+                                            </p>
+
+                                            <div class="popular-footer">
+
+                                                <span class="popular-reads">
+                                                    👁 {{ $book->read_count ?? 0 }} Reads
+                                                </span>
+
+                                                @auth
+                                                    <a href="{{ route('books.read', $book->id) }}" target="_blank"
+                                                        class="popular-read-btn" data-book-id="{{ $book->id }}"
+                                                        onclick="logRead(event,this)">
+                                                        Read
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('login') }}" class="popular-read-btn">
+                                                        Login
+                                                    </a>
+                                                @endauth
+
+                                            </div>
+
                                         </figcaption>
                                     </div>
                                 </div>
@@ -198,20 +269,60 @@
                             <div class="row">
                                 @forelse ($category->books as $book)
                                     <div class="col-md-3">
-                                        <div class="product-item book-card"
-                                            data-id="{{ $book->id }}"
-                                            data-name="{{ $book->book_name }}"
-                                            data-author="{{ $book->author_name }}"
-                                            data-image="{{ asset('uploads/books/'.$book->book_image) }}"
+                                        <div class="product-item book-card" data-id="{{ $book->id }}"
+                                            data-name="{{ $book->book_name }}" data-author="{{ $book->author_name }}"
+                                            data-image="{{ asset('uploads/books/' . $book->book_image) }}"
                                             data-description="{{ $book->description }}"
-                                            data-pdf="{{ $book->book_pdf ? asset('uploads/pdfs/'.$book->book_pdf) : '' }}">
+                                            data-pdf="{{ $book->book_pdf ? route('books.read', $book->id) : '' }}">
                                             <figure class="product-style">
-                                                <img src="{{ asset('uploads/books/' . $book->book_image) }}"
-                                                    alt="{{ $book->book_name }}" class="product-item">
+                                               <img src="{{ asset('uploads/books/' . $book->book_image) }}"
+                                                    alt="{{ $book->book_name }}"
+                                                    class="popular-book-image">
                                             </figure>
                                             <figcaption>
-                                                <h3>{{ $book->book_name }}</h3>
-                                                <span>{{ $book->author_name }}</span>
+
+                                                <span class="popular-category">
+                                                    {{ $book->category->category_name ?? 'General' }}
+                                                </span>
+
+                                                <h3 class="popular-title">
+                                                    {{ $book->book_name }}
+                                                </h3>
+
+                                                <p class="popular-author">
+                                                    <i class="fas fa-user-edit"></i>
+                                                    {{ $book->author_name }}
+                                                </p>
+
+                                                <div class="popular-rating">
+                                                    ⭐⭐⭐⭐⭐
+                                                    <span>4.9</span>
+                                                </div>
+
+                                                <p class="popular-description">
+                                                    {{ Str::limit($book->description, 65) }}
+                                                </p>
+
+                                                <div class="popular-footer">
+
+                                                    <span class="popular-reads">
+                                                        👁 {{ $book->read_count ?? 0 }} Reads
+                                                    </span>
+
+                                                    @auth
+                                                        <a href="{{ route('books.read', $book->id) }}" target="_blank"
+                                                            class="popular-read-btn" data-book-id="{{ $book->id }}"
+                                                            onclick="logRead(event,this)">
+                                                            Read
+                                                        </a>
+                                                    @else
+                                                        <a href="{{ route('login') }}" class="popular-read-btn">
+                                                            Login
+                                                        </a>
+                                                    @endauth
+
+                                                </div>
+
                                             </figcaption>
                                         </div>
                                     </div>
@@ -230,54 +341,93 @@
     </div>
 </section>
 
-<section id="quotation" class="align-center pb-5 mb-5">
-    <div class="inner-content">
-        <h2 class="section-title divider">Quote of the day</h2>
-        <blockquote data-aos="fade-up">
-            <q>“The more that you read, the more things you will know. The more that you learn, the more places
-                you’ll go.”</q>
-            <div class="author-name">Dr. Seuss</div>
-        </blockquote>
+<section id="quotation" class="quote-section">
+
+    <div class="quote-overlay"></div>
+
+    <div class="container">
+
+        <div class="quote-content" data-aos="zoom-in">
+
+            <span class="quote-badge">
+                📖 Quote of the Day
+            </span>
+
+            <div class="quote-icon">
+                <i class="fas fa-quote-left"></i>
+            </div>
+
+            <h2 class="quote-text">
+                “The more that you read, the more things you will know.
+                The more that you learn, the more places you'll go.”
+            </h2>
+
+            <div class="quote-author">
+                — Dr. Seuss
+            </div>
+
+        </div>
+
     </div>
+
 </section>
 
 
 
-<section id="subscribe">
+<section id="subscribe" class="newsletter-section py-5">
+
     <div class="container">
-        <div class="row justify-content-center">
 
-            <div class="col-md-8">
-                <div class="row">
+        <div class="newsletter-box">
 
-                    <div class="col-md-6">
+            <div class="row align-items-center">
 
-                        <div class="title-element">
-                            <h2 class="section-title divider">Subscribe to our newsletter</h2>
-                        </div>
+                <div class="col-lg-6">
 
-                    </div>
-                    <div class="col-md-6">
+                    <span class="newsletter-tag">
+                        📚 Stay Updated
+                    </span>
 
-                        <div class="subscribe-content" data-aos="fade-up">
-                            <p>Sed eu feugiat amet, libero ipsum enim pharetra hac dolor sit amet, consectetur. Elit
-                                adipiscing enim pharetra hac.</p>
-                            <form id="form">
-                                <input type="text" name="email" placeholder="Enter your email addresss here">
-                                <button class="btn-subscribe">
-                                    <span>send</span>
-                                    <i class="icon icon-send"></i>
-                                </button>
-                            </form>
-                        </div>
+                    <h2>
+                        Never Miss a New Book
+                    </h2>
 
-                    </div>
+                    <p>
+                        Subscribe to receive notifications about new book arrivals,
+                        trending titles, and library updates directly in your inbox.
+                    </p>
 
                 </div>
+
+                <div class="col-lg-6">
+
+                    <form action="" method="POST">
+                        @csrf
+
+                        <div class="newsletter-form">
+
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Enter your email address"
+                                required>
+
+                            <button type="submit">
+                                Subscribe
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
             </div>
 
         </div>
+
     </div>
+
 </section>
 
 <section id="latest-blog" class="py-5 my-5">
@@ -427,9 +577,66 @@
         <span id="modalBookAuthor" class="modal-author"></span>
         <p id="modalBookDescription" class="modal-description"></p>
 
-       <div class="book-modal-actions">
-            <a id="modalReadBtn" href="#" target="_blank" class="btn btn-dark">📖 Read Book</a>
+        <div class="book-modal-actions">
+            <a id="modalReadBtn" href="#" target="_blank" class="read-btn" data-book-id="{{ $book->id }}"
+                onclick="logRead(event, this)">📖 Read Book</a>
             <a id="modalLoginBtn" href="{{ route('login') }}" class="btn btn-dark">🔒 Login to Read</a>
         </div>
     </div>
 </div>
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.btn-heart').forEach(btn => {
+
+                btn.addEventListener('click', function () {
+
+                    let button = this;
+                    let bookId = button.dataset.bookId;
+
+                    fetch(`/books/${bookId}/favorite`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                            "Accept": "application/json"
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+
+                            if (data.status === "added") {
+                                button.classList.add("active");
+                            } else {
+                                button.classList.remove("active");
+                            }
+
+                        })
+                        .catch(error => console.log(error));
+
+                });
+
+            });
+
+        });
+    </script>
+    <script>
+        function logRead(e, el) {
+            const bookId = el.dataset.bookId;
+
+            fetch(`/books/${bookId}/log-read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const stat = document.getElementById('readCountStat');
+                    if (stat) stat.textContent = data.readCount;
+                });
+            // let the <a> continue normally and open the PDF in the new tab
+        }
+    </script>
+@endpush

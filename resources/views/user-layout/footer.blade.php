@@ -1,153 +1,218 @@
-<footer id="footer">
-		<div class="container">
-			<div class="row">
+<style>
+	.footer-section{
+    background:#1f1f1f;
+    color:#ddd;
+    padding:70px 0 20px;
+}
 
-				<div class="col-md-4">
+.footer-title{
+    color:#fff;
+    font-size:28px;
+    margin-bottom:20px;
+}
 
-					<div class="footer-item">
-						<div class="company-brand">
-							<img src="images/main-logo.png" alt="logo" class="footer-logo">
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sagittis sed ptibus liberolectus
-								nonet psryroin. Amet sed lorem posuere sit iaculis amet, ac urna. Adipiscing fames
-								semper erat ac in suspendisse iaculis.</p>
-						</div>
-					</div>
+.footer-heading{
+    color:#fff;
+    margin-bottom:20px;
+    font-size:18px;
+}
 
-				</div>
+.footer-text{
+    color:#bbb;
+    line-height:1.8;
+}
 
-				<div class="col-md-2">
+.footer-links{
+    list-style:none;
+    padding:0;
+}
 
-					<div class="footer-menu">
-						<h5>About Us</h5>
-						<ul class="menu-list">
-							<li class="menu-item">
-								<a href="#">vision</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">articles </a>
-							</li>
-							<li class="menu-item">
-								<a href="#">careers</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">service terms</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">donate</a>
-							</li>
-						</ul>
-					</div>
+.footer-links li{
+    margin-bottom:12px;
+}
 
-				</div>
-				<div class="col-md-2">
+.footer-links a{
+    color:#bbb;
+    text-decoration:none;
+    transition:.3s;
+}
 
-					<div class="footer-menu">
-						<h5>Discover</h5>
-						<ul class="menu-list">
-							<li class="menu-item">
-								<a href="#">Home</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">Books</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">Authors</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">Subjects</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">Advanced Search</a>
-							</li>
-						</ul>
-					</div>
+.footer-links a:hover{
+    color:#c5a880;
+    padding-left:5px;
+}
 
-				</div>
-				<div class="col-md-2">
+.footer-contact{
+    list-style:none;
+    padding:0;
+}
 
-					<div class="footer-menu">
-						<h5>My account</h5>
-						<ul class="menu-list">
-							<li class="menu-item">
-								<a href="#">Sign In</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">View Cart</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">My Wishtlist</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">Track My Order</a>
-							</li>
-						</ul>
-					</div>
+.footer-contact li{
+    margin-bottom:15px;
+    color:#bbb;
+}
 
-				</div>
-				<div class="col-md-2">
+.footer-contact i{
+    color:#c5a880;
+    margin-right:10px;
+    width:20px;
+}
 
-					<div class="footer-menu">
-						<h5>Help</h5>
-						<ul class="menu-list">
-							<li class="menu-item">
-								<a href="#">Help center</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">Report a problem</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">Suggesting edits</a>
-							</li>
-							<li class="menu-item">
-								<a href="#">Contact us</a>
-							</li>
-						</ul>
-					</div>
+.footer-social{
+    margin-top:20px;
+}
 
-				</div>
+.footer-social a{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#2d2d2d;
+    color:#fff;
+    margin-right:10px;
+    text-decoration:none;
+    transition:.3s;
+}
 
-			</div>
-			<!-- / row -->
+.footer-social a:hover{
+    background:#c5a880;
+    transform:translateY(-4px);
+}
 
-		</div>
-	</footer>
+.footer-section hr{
+    border-color:#444;
+    margin:40px 0 20px;
+}
 
-	<div id="footer-bottom">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
+.footer-bottom{
+    text-align:center;
+    color:#999;
+}
+@media(max-width:768px){
 
-					<div class="copyright">
-						<div class="row">
+.footer-section{
+    text-align:center;
+}
 
-							<div class="col-md-6">
-								<p>© 2022 All rights reserved. Free HTML Template by <a
-										href="https://www.templatesjungle.com/" target="_blank">TemplatesJungle</a></p>
-							</div>
+.footer-social{
+    justify-content:center;
+}
 
-							<div class="col-md-6">
-								<div class="social-links align-right">
-									<ul>
-										<li>
-											<a href="#"><i class="icon icon-facebook"></i></a>
-										</li>
-										<li>
-											<a href="#"><i class="icon icon-twitter"></i></a>
-										</li>
-										<li>
-											<a href="#"><i class="icon icon-youtube-play"></i></a>
-										</li>
-										<li>
-											<a href="#"><i class="icon icon-behance-square"></i></a>
-										</li>
-									</ul>
-								</div>
-							</div>
+.footer-links,
+.footer-contact{
+    margin-bottom:30px;
+}
 
-						</div>
-					</div><!--grid-->
+}
+</style>
+<footer class="footer-section">
 
-				</div><!--footer-bottom-content-->
-			</div>
-		</div>
-	</div>
+    <div class="container">
+
+        <div class="row gy-5">
+
+            <!-- Library -->
+            <div class="col-lg-4 col-md-6">
+
+                <h3 class="footer-title">
+                    📚 Library System
+                </h3>
+
+                <p class="footer-text">
+                    Discover thousands of books across different categories.
+                    Read anytime, anywhere, and enjoy a seamless digital
+                    library experience.
+                </p>
+
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6">
+
+                <h4 class="footer-heading">Quick Links</h4>
+
+                <ul class="footer-links">
+
+                    <li><a href="/">Home</a></li>
+
+                    <li><a href="#featured-books">Featured Books</a></li>
+
+                    <li><a href="#popular-books">Popular Books</a></li>
+
+                    <li><a href="#subscribe">Newsletter</a></li>
+
+                </ul>
+
+            </div>
+
+            <!-- Categories -->
+            <div class="col-lg-3 col-md-6">
+
+                <h4 class="footer-heading">Categories</h4>
+
+                <ul class="footer-links">
+
+                    @foreach($categories->take(5) as $category)
+                        <li>{{ $category->category_name }}</li>
+                    @endforeach
+
+                </ul>
+
+            </div>
+
+            <!-- Contact -->
+            <div class="col-lg-3 col-md-6">
+
+                <h4 class="footer-heading">Contact</h4>
+
+                <ul class="footer-contact">
+
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        support@library.com
+                    </li>
+
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        +92 300 1234567
+                    </li>
+
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        Multan, Pakistan
+                    </li>
+
+                </ul>
+
+                <div class="footer-social">
+
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="footer-bottom">
+
+            <p>
+                © {{ date('Y') }} Library Management System.
+                All Rights Reserved.
+            </p>
+
+        </div>
+
+    </div>
+
+</footer>

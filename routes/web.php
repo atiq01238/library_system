@@ -6,7 +6,8 @@ use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\book\AddBookController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BookCategoryController;
-
+use App\Http\Controllers\FavoriteController; 
+use App\Http\Controllers\ViewedBookController;
 
 Route::get('/auth/register', function () {
 return view('auth.register');
@@ -15,16 +16,24 @@ Route::post('/auth/register', [RegisterController::class,'register'])->name('reg
 Route::get('/auth/login', function () {
 return view('auth.login');
 });
+Route::get('/auth/forget-password', function(){
+    return view('auth.forget-password');
+});
 Route::post('/auth/login', [LoginController::class,'login'])->name('login');
 Route::post('/logout', function () {
-    Auth::logout();
+Auth::logout();
     return redirect('/auth/login');
 })->name('logout');
-Route::get('/', function () {
-        return view('user-layout.master');
-    });
-Route::get('/', [AddBookController::class,'index'])->name('user-layout.master');
-
+Route::get('/', [AddBookController::class,'index'])->name('home');
+Route::middleware('auth')->post('/books/{book}/view', [ViewedBookController::class, 'store'])
+    ->name('books.view');
+Route::get('/', [ViewedBookController::class,'index']);
+Route::post('/books/{id}/log-read', [AddBookController::class, 'logRead'])
+     ->name('books.logRead')
+     ->middleware('auth');
+Route::get('/books/{id}/read', [AddBookController::class, 'readBook'])
+     ->name('books.read')
+     ->middleware('auth');
 Route::middleware(['auth'])->group(function () {
     
     Route::get('/book', function () {
@@ -37,13 +46,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', function(){
         return view('user-profile.index');
     });
-   
-
+    Route::post('/books/{book}/favorite', [FavoriteController::class, 'toggle']);
+    Route::get('/favorites', [FavoriteController::class, 'myList'])->name('favorites.index');
+    Route::get('/books/search', [AddBookController::class, 'searchBar'])
+    ->name('books.search');
 });
 Route::middleware(['auth', 'admin'])->group(function () {
-    // Route::get('admin', function () {
-    //     return view('welcome');
-    // });
+
     Route::put('/users/{id}/role', [RegisterController::class, 'updateRole'])
         ->name('users.role.update');
 

@@ -20,4 +20,13 @@ class Book extends Model
     {
         return $this->belongsTo(BookCategory::class, 'category_id');
     }
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'favorites',
+            'book_id',
+            'user_id'
+        )->withTimestamps();
+    }
 }
