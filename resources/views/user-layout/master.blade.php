@@ -90,6 +90,7 @@
 	@include('user-layout.index')
 
 	@include('user-layout.footer')
+	@include('components.chatbot')
 
 	@auth
 		<div class="profile-modal-overlay" id="profileModalOverlay">

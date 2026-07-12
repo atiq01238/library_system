@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BookCategoryController;
 use App\Http\Controllers\FavoriteController; 
 use App\Http\Controllers\ViewedBookController;
+use App\Http\Controllers\ChatbotController;    
 
 Route::get('/auth/register', function () {
 return view('auth.register');
@@ -62,6 +63,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->name('books.delete');
     Route::delete('/category/{id}', [BookCategoryController::class, 'destroy'])
         ->name('categories.destroy');
+    Route::post('/chatbot/ask', [ChatbotController::class, 'ask'])->name('chatbot.ask');
+
 });
 Route::middleware(['auth','role:admin,member'])->group(function () {
    Route::get('/add-book', function () {
